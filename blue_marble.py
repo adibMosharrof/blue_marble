@@ -24,6 +24,9 @@ import time
 crop_shape = [28, 28]
 data_path = "data"
 results_dir = "results"
+if not os.path.isdir(results_dir):
+    os.mkdir(results_dir)
+
 imgs = {}
 for name in os.listdir(data_path):
     imgs[name] = Image.open(os.path.join(data_path, name)).convert("L")
