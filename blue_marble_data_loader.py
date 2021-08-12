@@ -25,20 +25,24 @@ class BlueMarbleDataLoader(Dataset):
         img2_name = self._get_img2_name(img1_name)
 
         should_get_negative_example = random.randint(0, 1)
-
+        boxes = []
         img1 = self._read_image(img1_name)
         img2 = self._read_image(img2_name)
         box = self._get_crop_box(img1.size)
+        # boxes.append(box)
         crop1 = self._my_crop(img1, box)
 
         if should_get_negative_example:
             box = self._get_crop_box(img1.size)
+            boxes.append(box)
         crop2 = self._my_crop(img2, box)
 
         return {
-            "image_1": torch.from_numpy(np.expand_dims(crop1, 0)).float(),
-            "image_2": torch.from_numpy(np.expand_dims(crop2, 0)).float(),
+            "image_1": torch.from_numpy(crop1).permute(2, 0, 1).float(),
+            "image_2": torch.from_numpy(crop2).permute(2, 0, 1).float(),
             "label": should_get_negative_example,
+            # "box_1": boxes[0],
+            # "box_2": boxes[1],
         }
 
     def __len__(self):
@@ -57,7 +61,7 @@ class BlueMarbleDataLoader(Dataset):
     def _my_crop(self, img, box):
         # top, left, height, width = box
         c_img = img.crop(box)
-        return np.asarray(c_img)
+        return np.asarray(c_img, "float")
 
     def _get_crop_box(self, img_shape):
         rand_x = randint(0, img_shape[0] - self.crop_shape[0])

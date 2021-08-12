@@ -1,63 +1,46 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.modules import padding
 from torch.nn.modules.linear import Linear
 
 
 class SiameseNetwork(nn.Module):
     def __init__(self):
         super(SiameseNetwork, self).__init__()
-        # Setting up the Sequential of CNN Layers
-        # self.cnn1 = nn.Sequential(
-        #     nn.Conv2d(1, 96, kernel_size=11, stride=1),
-        #     nn.ReLU(inplace=True),
-        #     nn.LocalResponseNorm(5, alpha=0.0001, beta=0.75, k=2),
-        #     nn.MaxPool2d(3, stride=2),
-        #     nn.Conv2d(96, 256, kernel_size=5, stride=1, padding=2),
-        #     nn.ReLU(inplace=True),
-        #     nn.LocalResponseNorm(5, alpha=0.0001, beta=0.75, k=2),
-        #     nn.MaxPool2d(3, stride=2),
-        #     nn.Dropout2d(p=0.3),
-        #     nn.Conv2d(256, 384, kernel_size=3, stride=1, padding=1),
-        #     nn.ReLU(inplace=True),
-        #     nn.Conv2d(384, 256, kernel_size=3, stride=1, padding=1),
-        #     nn.ReLU(inplace=True),
-        #     nn.MaxPool2d(3, stride=2),
-        #     nn.Dropout2d(p=0.3),
-        # )
 
-        # # Defining the fully connected layers
+        self.cnn1 = nn.Sequential(
+            nn.Conv2d(in_channels=3, out_channels=6, kernel_size=3),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=6, out_channels=12, kernel_size=3),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=12, out_channels=24, kernel_size=3),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=24, out_channels=36, kernel_size=3),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=36, out_channels=10, kernel_size=1, stride=1, padding=0
+            ),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=10, out_channels=1, kernel_size=1, stride=1, padding=0
+            ),
+        )
         # self.fc1 = nn.Sequential(
-        #     nn.Linear(30976, 1024),
+        #     nn.Linear(in_features=400, out_features=120),
         #     nn.ReLU(inplace=True),
         #     nn.Dropout2d(p=0.5),
-        #     nn.Linear(1024, 128),
+        #     nn.Linear(in_features=120, out_features=60),
         #     nn.ReLU(inplace=True),
-        #     nn.Linear(128, 2),
+        #     nn.Dropout2d(p=0.5),
+        #     nn.Linear(in_features=60, out_features=10),
         # )
-        self.cnn1 = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, stride=2),
-            nn.Conv2d(in_channels=6, out_channels=12, kernel_size=5),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, stride=2),
-        )
-        self.fc1 = nn.Sequential(
-            nn.Linear(in_features=12 * 4 * 4, out_features=120),
-            nn.ReLU(inplace=True),
-            nn.Dropout2d(p=0.5),
-            nn.Linear(in_features=120, out_features=60),
-            nn.ReLU(inplace=True),
-            nn.Dropout2d(p=0.5),
-            nn.Linear(in_features=60, out_features=10),
-        )
 
     def forward_once(self, x):
         # Forward pass
         output = self.cnn1(x)
         output = output.view(output.size()[0], -1)
-        output = self.fc1(output)
+        # output = self.fc1(output)
         return output
 
     def forward(self, input1, input2):
