@@ -12,29 +12,37 @@ class SiameseNetwork(nn.Module):
         self.cnn1 = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=6, kernel_size=3),
             nn.ReLU(),
+            nn.BatchNorm2d(6),
             nn.Conv2d(in_channels=6, out_channels=12, kernel_size=3),
             nn.ReLU(),
+            nn.BatchNorm2d(12),
             nn.Conv2d(in_channels=12, out_channels=24, kernel_size=3),
             nn.ReLU(),
+            nn.BatchNorm2d(24),
             nn.Conv2d(in_channels=24, out_channels=36, kernel_size=3),
             nn.ReLU(),
+            nn.BatchNorm2d(36),
             nn.Conv2d(
                 in_channels=36, out_channels=10, kernel_size=1, stride=1, padding=0
             ),
             nn.ReLU(),
+            nn.BatchNorm2d(10),
             nn.Conv2d(
                 in_channels=10, out_channels=1, kernel_size=1, stride=1, padding=0
             ),
+            # nn.AvgPool2d(2),
         )
-        # self.fc1 = nn.Sequential(
-        #     nn.Linear(in_features=400, out_features=120),
-        #     nn.ReLU(inplace=True),
-        #     nn.Dropout2d(p=0.5),
-        #     nn.Linear(in_features=120, out_features=60),
-        #     nn.ReLU(inplace=True),
-        #     nn.Dropout2d(p=0.5),
-        #     nn.Linear(in_features=60, out_features=10),
-        # )
+
+        # in_dims = 3
+        # out_dims = None
+        # self.layers = nn.ModuleList()
+        # for i in range(self.layers):
+        #     out_dims = in_dims * 2
+        #     self.layers.append(
+        #         nn.Conv2d(in_channels=in_dims, out_dims=out_dims, kernel_size=3)
+        #     )
+        #     self.layers.append(nn.ReLU())
+        #     self.layers.append(nn.BatchNorm2d(out_dims))
 
     def forward_once(self, x):
         # Forward pass
