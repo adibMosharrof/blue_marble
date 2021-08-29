@@ -20,17 +20,6 @@ class SiameseNetwork(nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(24),
             nn.Conv2d(in_channels=24, out_channels=36, kernel_size=3),
-            nn.ReLU(),
-            nn.BatchNorm2d(36),
-            nn.Conv2d(
-                in_channels=36, out_channels=10, kernel_size=1, stride=1, padding=0
-            ),
-            nn.ReLU(),
-            nn.BatchNorm2d(10),
-            nn.Conv2d(
-                in_channels=10, out_channels=1, kernel_size=1, stride=1, padding=0
-            ),
-            # nn.AvgPool2d(2),
         )
 
         # in_dims = 3

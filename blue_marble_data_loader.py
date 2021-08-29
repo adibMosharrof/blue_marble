@@ -9,16 +9,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 import uuid
 
+random.seed(3)
+
 
 class BlueMarbleDataLoader(Dataset):
     data_path = "data"
 
-    def __init__(self, img_names, imgs, crop_shape, total_data_size=50) -> None:
+    def __init__(
+        self, img_names, imgs, crop_shape, total_data_size=50, loc=None
+    ) -> None:
         super().__init__()
         self.img_names = img_names
         self.crop_shape = crop_shape
         self.total_data_size = total_data_size
         self.imgs = imgs
+        self.loc = loc
 
     def __getitem__(self, index):
         img1_name = random.choice(self.img_names)
@@ -64,8 +69,7 @@ class BlueMarbleDataLoader(Dataset):
         return np.asarray(c_img, "float")
 
     def _get_crop_box(self, img_shape):
-        rand_x = randint(0, img_shape[0] - self.crop_shape[0])
-        rand_y = randint(0, img_shape[1] - self.crop_shape[1])
+        rand_x, rand_y = self._get_loc(img_shape)
 
         left = rand_x
         top = rand_y
@@ -74,6 +78,15 @@ class BlueMarbleDataLoader(Dataset):
 
         box = (left, top, right, bottom)
         return box
+
+    def _get_loc(self, img_shape):
+        if not self.loc:
+            return (
+                randint(0, img_shape[0] - self.crop_shape[0]),
+                randint(0, img_shape[1] - self.crop_shape[1]),
+            )
+        loc = random.choice(self.loc)
+        return loc[0], loc[1]
 
     def display(self, imgs):
         n = len(imgs)
